@@ -309,7 +309,7 @@ def create_from_images(tfrecord_dir, image_dir, shuffle, add_condition):
 
     import pandas as pd
     #df = pd.DataFrame.from_dict(all_data)
-    image_filenames_temp = sorted(glob.glob(os.path.join(image_dir, '*.jpg')))
+    image_filenames_temp = sorted(glob.glob(os.path.join(image_dir, '*.jpeg')))
     print("NUMBER OF FILES: ", len(image_filenames_temp))
     if len(image_filenames_temp) == 0:
         error('No input images found')

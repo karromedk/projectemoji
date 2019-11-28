@@ -71,10 +71,10 @@ def create_image_grid(images, grid_size=None):
 def convert_to_pil_image(image, drange=[0,1]):
     assert image.ndim == 2 or image.ndim == 3
     if image.ndim == 3:
-        if image.shape[0] == 1:
-            image = image[0] # grayscale CHW => HW
-        else:
-            image = image.transpose(1, 2, 0) # CHW -> HWC
+        #if image.shape[0] == 1:
+            #image = image[0] # grayscale CHW => HW
+        #else:
+        image = image.transpose(1, 2, 0) # CHW -> HWC
 
     image = adjust_dynamic_range(image, drange, [0,255])
     image = np.rint(image).clip(0, 255).astype(np.uint8)

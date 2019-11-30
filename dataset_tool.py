@@ -298,7 +298,7 @@ def compare(tfrecord_dir_a, tfrecord_dir_b, ignore_labels):
     # return dict
 
 
-def create_from_images(tfrecord_dir, image_dir, shuffle, add_condition):
+def create_from_images(tfrecord_dir, image_dir, shuffle,):
     print('Loading images from "%s"' % image_dir)
     image_filenames = sorted(glob.glob(os.path.join(image_dir, '*')))
     if len(image_filenames) == 0:
@@ -326,13 +326,13 @@ def create_from_images(tfrecord_dir, image_dir, shuffle, add_condition):
                 img = img.transpose([2, 0, 1]) # HWC => CHW
             tfr.add_image(img)
 
-    with TFRecordExporter(tfrecord_dir, len(image_filenames_temp)) as tfr:
-        order = np.arange(len(image_filenames_temp))
+    with TFRecordExporter(tfrecord_dir, len(image_filenames)) as tfr:
+        order = np.arange(len(image_filenames))
         #drop = []
         #deleted = []
         for idx in range(order.size):
             #print("HERE ",df["Filenames"].iloc[order[idx]])
-            img = np.asarray(PIL.Image.open(image_filenames_temp[order[idx]]))
+            img = np.asarray(PIL.Image.open(image_filenames[order[idx]]))
             if channels == 1:
                 img = img[np.newaxis, :, :] # HW => CHW
             else:

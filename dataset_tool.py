@@ -298,7 +298,7 @@ def compare(tfrecord_dir_a, tfrecord_dir_b, ignore_labels):
     # return dict
 
 
-def create_from_images(tfrecord_dir, image_dir, shuffle):
+def create_from_images(tfrecord_dir, image_dir, shuffle, add_condition):
     print('Loading images from "%s"' % image_dir)
     image_filenames = sorted(glob.glob(os.path.join(image_dir, '*')))
     if len(image_filenames) == 0:

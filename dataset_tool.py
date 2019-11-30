@@ -298,24 +298,13 @@ def compare(tfrecord_dir_a, tfrecord_dir_b, ignore_labels):
     # return dict
 
 
-def create_from_images(tfrecord_dir, image_dir, shuffle, add_condition):
-    print("ADD CONDITION ", add_condition)
+def create_from_images(tfrecord_dir, image_dir, shuffle):
     print('Loading images from "%s"' % image_dir)
-
-    #all_data = unpickle('../data/mypickle.pickle')
-    #image_filenames_temp = all_data["Filenames"]
-    #conditions_all = all_data["Labels"] #for others use Clusters
-    #assert len(conditions_all) == len(image_filenames_temp)
-
-    import pandas as pd
-    #df = pd.DataFrame.from_dict(all_data)
-    image_filenames_temp = sorted(glob.glob(os.path.join(image_dir, '*.jpeg')))
-    print("NUMBER OF FILES: ", len(image_filenames_temp))
-    if len(image_filenames_temp) == 0:
+    image_filenames = sorted(glob.glob(os.path.join(image_dir, '*')))
+    if len(image_filenames) == 0:
         error('No input images found')
 
-    # img = np.asarray(PIL.Image.open(image_dir + df['Filenames'][0]))
-    img = np.asarray(PIL.Image.open(image_filenames_temp[0]))
+    img = np.asarray(PIL.Image.open(image_filenames[0]))
     resolution = img.shape[0]
     channels = img.shape[2] if img.ndim == 3 else 1
     if img.shape[1] != resolution:
@@ -325,27 +314,17 @@ def create_from_images(tfrecord_dir, image_dir, shuffle, add_condition):
     if channels not in [1, 3]:
         error('Input images must be stored as RGB or grayscale')
 
-    '''
-    drop = []
-    df_copy = df.copy()
-    for i in range(len(df["Filenames"])):
-        img = np.asarray(PIL.Image.open(image_dir + df["Filenames"].iloc[i]))
-        if channels == 1:
-            img = img[np.newaxis, :, :] # HW => CHW
-        else:
-            try:
+    with TFRecordExporter(tfrecord_dir, len(image_filenames)) as tfr:
+        order = tfr.choose_shuffled_order() if shuffle else np.arange(len(image_filenames))
+        for idx in range(order.size):
+            img = np.asarray(PIL.Image.open(image_filenames[order[idx]]))
+            print(image_filenames[order[idx]])
+            print(img.shape)
+            if channels == 1:
+                img = img[np.newaxis, :, :] # HW => CHW
+            else:
                 img = img.transpose([2, 0, 1]) # HWC => CHW
-
-                print("added")
-            except:
-                drop.append(i)
-                print("deleted")
-                continue
-
-    print("NUMBER OF IMAGES BEFORE: ", len(df))
-    df = df.drop(drop)
-    print("NUMBER OF IMAGES AFTER: ", len(df))
-    '''
+            tfr.add_image(img)
 
     with TFRecordExporter(tfrecord_dir, len(image_filenames_temp)) as tfr:
         order = np.arange(len(image_filenames_temp))
